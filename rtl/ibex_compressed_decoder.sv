@@ -205,7 +205,14 @@ module ibex_compressed_decoder (
             instr_o = {instr_i[12], instr_i[8], instr_i[10:9], instr_i[6],
                        instr_i[7], instr_i[2], instr_i[11], instr_i[5:3],
                        {9 {instr_i[12]}}, 4'b0, ~instr_i[15], {OPCODE_JAL}};
-            //write: no, its jump.
+            //Coco original comment: write: no, its jump.
+            //c.j is a jump that extends to a x0 write so it would be OK but
+            //this is not the case for the c.jal which writes to the ra
+            //register.
+            `ifdef REGWRITE_SECURE
+              write_reg = 1;
+              write_address = 5'b00001; // Yes, in the c.j case, we should disable the write but this is a quick fix
+            `endif
           end
 
           3'b010: begin
@@ -440,6 +447,10 @@ module ibex_compressed_decoder (
           `ifdef REGREAD_SECURE
             read_a = 1;
             read_address_a = {instr_i[11:7]};
+          `endif
+          `ifdef REGWRITE_SECURE
+            write_reg = 1;
+            write_address = instr_i[11:7];
           `endif
           `ifdef SHIFT_SECURE
             shift_enable = 1;
