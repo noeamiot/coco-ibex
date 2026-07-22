@@ -199,8 +199,18 @@ module ibex_compressed_decoder (
 
           end
 
-          3'b001, 3'b101: begin
+          3'b001: begin
             // 001: c.jal -> jal x1, imm
+            instr_o = {instr_i[12], instr_i[8], instr_i[10:9], instr_i[6],
+                       instr_i[7], instr_i[2], instr_i[11], instr_i[5:3],
+                       {9 {instr_i[12]}}, 4'b0, ~instr_i[15], {OPCODE_JAL}};
+          `ifdef REGWRITE_SECURE
+            write_reg = 1;
+            write_address = 5'b00001;
+          `endif
+          end
+
+          3'b101: begin
             // 101: c.j   -> jal x0, imm
             instr_o = {instr_i[12], instr_i[8], instr_i[10:9], instr_i[6],
                        instr_i[7], instr_i[2], instr_i[11], instr_i[5:3],
