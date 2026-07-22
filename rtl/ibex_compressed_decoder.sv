@@ -451,6 +451,10 @@ module ibex_compressed_decoder (
             read_a = 1;
             read_address_a = {instr_i[11:7]};
           `endif
+          `ifdef REGWRITE_SECURE
+            write_reg = 1;
+            write_address = instr_i[11:7];
+          `endif
           `ifdef SHIFT_SECURE
             shift_enable = 1;
           `endif
