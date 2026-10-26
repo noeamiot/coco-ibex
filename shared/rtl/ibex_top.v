@@ -9,8 +9,15 @@
 
 module ibex_top (clk_sys, rst_sys_n, 
                  `ifdef MEM_SECURE
-                 instr_we, instr_be, instr_wdata
+                 instr_we, instr_be, instr_wdata,
                  `endif
+  instr_req_o,
+  instr_addr_o,
+  data_req_o,
+  data_we_o,
+  data_be_o,
+  data_addr_o,
+  data_wdata_o
 );
   // Inputs
   input clk_sys;
@@ -20,6 +27,14 @@ module ibex_top (clk_sys, rst_sys_n,
   input [3:0] instr_be;
   input [31:0] instr_wdata;
   `endif
+
+  output instr_req_o;
+  output [31:0] instr_addr_o;
+  output data_req_o;
+  output data_we_o;
+  output [ 3:0] data_be_o;
+  output [31:0] data_addr_o;
+  output [31:0] data_wdata_o;
   
   `ifdef MEM_SECURE
   parameter MEM_SIZE  = 8*1024; //8 * 1024; // 64 kB
@@ -177,4 +192,12 @@ module ibex_top (clk_sys, rst_sys_n,
       data_rvalid <= (~instr_req && data_req) && mem_req;
     end
   `endif
+
+  wire instr_req_o            = instr_req;
+  wire [31:0] instr_addr_o    = instr_addr;
+  wire data_req_o             = data_req;
+  wire data_we_o              = data_we;
+  wire [ 3:0] data_be_o       = data_be;
+  wire [31:0] data_addr_o     = data_addr;
+  wire [31:0] data_wdata_o    = data_wdata;
 endmodule
